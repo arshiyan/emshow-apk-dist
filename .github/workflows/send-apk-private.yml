@@ -1,0 +1,29 @@
+name: send-apk-private
+on:
+  workflow_dispatch:
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download APK from release and sendDocument to private chat only
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${TG_BOT_TOKEN}" || -z "${TG_CHAT_ID}" ]]; then
+            echo "missing secrets"; exit 1
+          fi
+          if [[ "${TG_CHAT_ID}" -lt 0 ]]; then
+            echo "REFUSE channel/group chat_id"; exit 3
+          fi
+          curl -sSL -o app.apk \
+            "https://github.com/arshiyan/emshow-apk-dist/releases/download/v1/app-production-direct-release.apk"
+          ls -la app.apk
+          RESP=$(curl -sS --max-time 180 \
+            -F "chat_id=${TG_CHAT_ID}" \
+            -F "caption=امشو UX polish signed productionDirectRelease" \
+            -F "document=@app.apk" \
+            "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument")
+          echo "$RESP" | head -c 2000
+          echo "$RESP" | python3 -c 'import sys,json; d=json.load(sys.stdin); raise SystemExit(0 if d.get("ok") else 1)'
