@@ -5,7 +5,7 @@ jobs:
   send:
     runs-on: ubuntu-latest
     steps:
-      - name: Download APK from release and sendDocument to private chat only
+      - name: Download APK and sendDocument to private chat only
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
@@ -17,13 +17,17 @@ jobs:
           if [[ "${TG_CHAT_ID}" -lt 0 ]]; then
             echo "REFUSE channel/group chat_id"; exit 3
           fi
-          curl -sSL -o app.apk \
-            "https://github.com/arshiyan/emshow-apk-dist/releases/download/v1/app-production-direct-release.apk"
-          ls -la app.apk
+          curl -sSL --max-time 180 -o app-production-direct-release.apk \
+            "https://emshow.ir/downloads/app-production-direct-release.apk"
+          ls -la app-production-direct-release.apk
+          SIZE=$(stat -c%s app-production-direct-release.apk)
+          if [[ "$SIZE" -lt 1000000 ]]; then
+            echo "APK too small: $SIZE"; exit 4
+          fi
           RESP=$(curl -sS --max-time 180 \
             -F "chat_id=${TG_CHAT_ID}" \
-            -F "caption=امشو UX polish signed productionDirectRelease" \
-            -F "document=@app.apk" \
+            -F "caption=امشو — نوتیف هوشمند + پارتی/وویس/چت اورلی | productionDirectRelease (~23MB)" \
+            -F "document=@app-production-direct-release.apk" \
             "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument")
           echo "$RESP" | head -c 2000
           echo "$RESP" | python3 -c 'import sys,json; d=json.load(sys.stdin); raise SystemExit(0 if d.get("ok") else 1)'
