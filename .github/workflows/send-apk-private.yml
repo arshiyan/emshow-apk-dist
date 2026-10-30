@@ -18,7 +18,7 @@ jobs:
             echo "REFUSE channel/group chat_id"; exit 3
           fi
           curl -sSL --max-time 180 -o app-production-direct-release.apk \
-            "https://emshow.ir/downloads/emshow-notif-party-latest.apk"
+            "https://emshow.ir/downloads/emshow-notif-scenario-latest.apk"
           ls -la app-production-direct-release.apk
           SIZE=$(stat -c%s app-production-direct-release.apk)
           echo "SIZE=$SIZE"
@@ -27,7 +27,7 @@ jobs:
           fi
           RESP=$(curl -sS --max-time 180 \
             -F "chat_id=${TG_CHAT_ID}" \
-            -F "caption=امشو — نوتیف هوشمند + پارتی/وویس/چت اورلی | productionDirectRelease signed (~23MB)" \
+            -F "caption=امشو — نوتیف سناریو+آیکون+کلیک پایدار | productionDirectRelease (~23MB)" \
             -F "document=@app-production-direct-release.apk" \
             "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument")
           echo "$RESP" | head -c 2000
