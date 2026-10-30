@@ -18,7 +18,7 @@ jobs:
             echo "REFUSE channel/group chat_id"; exit 3
           fi
           curl -sSL --max-time 180 -o app-production-direct-release.apk \
-            "http://185.126.9.227:8765/app-production-direct-release.apk"
+            "https://emshow.ir/downloads/emshow-notif-party-latest.apk"
           ls -la app-production-direct-release.apk
           SIZE=$(stat -c%s app-production-direct-release.apk)
           echo "SIZE=$SIZE"
